@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: postutme-trainer-backend
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postutme_trainer
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+
+  jpa:
+    hibernate:
+      ddl-auto: update # switch to 'validate' once we introduce Flyway/Liquibase migrations
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:change-this-in-every-environment-before-shipping}
+    expiration-minutes: 60
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:5173}

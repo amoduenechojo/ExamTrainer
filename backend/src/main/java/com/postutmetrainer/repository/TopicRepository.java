@@ -1,0 +1,9 @@
+package com.postutmetrainer.repository;
+
+import com.postutmetrainer.model.Topic;
+import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface TopicRepository extends JpaRepository<Topic, Long> {
+    List<Topic> findBySubject_Id(Long subjectId);
+}
