@@ -50,14 +50,20 @@ public class ExamService {
     @Transactional(readOnly = true)
     public List<SubjectResponse> getSubjects() {
         return subjectRepository.findAll().stream()
-                .map(s -> new SubjectResponse(s.getId(), s.getName(), topicRepository.findBySubject_Id(s.getId()).size()))
+                .map(subject -> new SubjectResponse(
+                        subject.getId(),
+                        subject.getName(),
+                        topicRepository.findBySubject_Id(subject.getId()).size()))
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public List<TopicResponse> getTopics(Long subjectId) {
         return topicRepository.findBySubject_Id(subjectId).stream()
-                .map(t -> new TopicResponse(t.getId(), t.getName(), questionRepository.countByTopic_Id(t.getId())))
+                .map(topic -> new TopicResponse(
+                        topic.getId(),
+                        topic.getName(),
+                        questionRepository.countByTopic_Id(topic.getId())))
                 .toList();
     }
 
@@ -106,11 +112,11 @@ public class ExamService {
                 : shuffled;
 
         List<QuestionResponse> questionResponses = selected.stream()
-                .map(q -> new QuestionResponse(
-                        q.getId(),
-                        q.getStem(),
-                        q.getOptions().stream()
-                                .map(o -> new QuestionOptionResponse(o.getId(), o.getText()))
+                .map(question -> new QuestionResponse(
+                        question.getId(),
+                        question.getStem(),
+                        question.getOptions().stream()
+                                .map(option -> new QuestionOptionResponse(option.getId(), option.getText()))
                                 .toList()))
                 .toList();
 
@@ -125,7 +131,7 @@ public class ExamService {
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Question not found"));
 
         QuestionOption chosenOption = question.getOptions().stream()
-                .filter(o -> o.getId().equals(request.chosenOptionId()))
+                .filter(option -> option.getId().equals(request.chosenOptionId()))
                 .findFirst()
                 .orElseThrow(() -> new ApiException(HttpStatus.BAD_REQUEST, "That option doesn't belong to this question"));
 
@@ -197,19 +203,19 @@ public class ExamService {
     // --- helpers -----------------------------------------------------------
 
     private List<WeakTopicResponse> computeWeakTopics(List<Attempt> attempts) {
-        Map<Topic, List<Attempt>> byTopic = attempts.stream()
-                .collect(Collectors.groupingBy(a -> a.getQuestion().getTopic()));
+        Map<Topic, List<Attempt>> attemptsByTopic = attempts.stream()
+                .collect(Collectors.groupingBy(attempt -> attempt.getQuestion().getTopic()));
 
-        return byTopic.entrySet().stream()
-                .filter(e -> e.getValue().size() >= MIN_ATTEMPTS_FOR_WEAK_SIGNAL)
-                .map(e -> {
-                    Topic topic = e.getKey();
-                    List<Attempt> topicAttempts = e.getValue();
+        return attemptsByTopic.entrySet().stream()
+                .filter(topicEntry -> topicEntry.getValue().size() >= MIN_ATTEMPTS_FOR_WEAK_SIGNAL)
+                .map(topicEntry -> {
+                    Topic topic = topicEntry.getKey();
+                    List<Attempt> topicAttempts = topicEntry.getValue();
                     long correct = topicAttempts.stream().filter(Attempt::isCorrect).count();
                     double accuracy = Math.round((correct * 1000.0) / topicAttempts.size()) / 10.0;
                     return new WeakTopicResponse(topic.getId(), topic.getName(), topic.getSubject().getId(), topic.getSubject().getName(), accuracy);
                 })
-                .filter(w -> w.accuracy() < WEAK_ACCURACY_THRESHOLD)
+                .filter(weakTopic -> weakTopic.accuracy() < WEAK_ACCURACY_THRESHOLD)
                 .sorted(Comparator.comparingDouble(WeakTopicResponse::accuracy))
                 .toList();
     }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { linkToStudent, getStudentProgress } from "../services/authService";
+import { linkToStudent } from "../services/authService";
+import { getStudentProgress } from "../services/examService";
 import api from "../services/api";
 
 export default function ParentDashboard() {
