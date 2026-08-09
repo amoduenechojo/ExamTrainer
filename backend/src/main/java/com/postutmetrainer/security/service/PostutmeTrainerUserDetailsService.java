@@ -1,4 +1,4 @@
-package com.postutmetrainer.security;
+package com.postutmetrainer.security.service;
 
 import com.postutmetrainer.model.User;
 import com.postutmetrainer.repository.UserRepository;
@@ -9,11 +9,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AppUserDetailsService implements UserDetailsService {
+public class PostutmeTrainerUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-    public AppUserDetailsService(UserRepository userRepository) {
+    public PostutmeTrainerUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 

@@ -1,6 +1,6 @@
 package com.postutmetrainer.controller;
 
-import com.postutmetrainer.dto.*;
+import com.postutmetrainer.security.dto.*;
 import com.postutmetrainer.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;

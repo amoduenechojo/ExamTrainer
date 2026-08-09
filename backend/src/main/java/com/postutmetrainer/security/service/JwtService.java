@@ -1,4 +1,4 @@
-package com.postutmetrainer.security;
+package com.postutmetrainer.security.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

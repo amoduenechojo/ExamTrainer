@@ -1,5 +1,7 @@
-package com.postutmetrainer.security;
+package com.postutmetrainer.security.filter;
 
+import com.postutmetrainer.security.service.JwtService;
+import com.postutmetrainer.security.service.PostutmeTrainerUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,13 +15,18 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+/**
+ * Reads the "Authorization: Bearer <token>" header on every request, validates the JWT, and (if
+ * valid) populates the SecurityContext so downstream controllers see an authenticated user.
+ */
 @Component
-public class JwtAuthFilter extends OncePerRequestFilter {
+public class PostutmeTrainerAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final AppUserDetailsService userDetailsService;
+    private final PostutmeTrainerUserDetailsService userDetailsService;
 
-    public JwtAuthFilter(JwtService jwtService, AppUserDetailsService userDetailsService) {
+    public PostutmeTrainerAuthenticationFilter(
+            JwtService jwtService, PostutmeTrainerUserDetailsService userDetailsService) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
     }

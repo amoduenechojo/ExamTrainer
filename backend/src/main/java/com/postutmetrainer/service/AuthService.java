@@ -1,6 +1,5 @@
 package com.postutmetrainer.service;
 
-import com.postutmetrainer.dto.*;
 import com.postutmetrainer.exception.ApiException;
 import com.postutmetrainer.model.Parent;
 import com.postutmetrainer.model.Role;
@@ -9,8 +8,9 @@ import com.postutmetrainer.model.User;
 import com.postutmetrainer.repository.ParentRepository;
 import com.postutmetrainer.repository.StudentRepository;
 import com.postutmetrainer.repository.UserRepository;
-import com.postutmetrainer.security.AppUserDetailsService;
-import com.postutmetrainer.security.JwtService;
+import com.postutmetrainer.security.dto.*;
+import com.postutmetrainer.security.service.JwtService;
+import com.postutmetrainer.security.service.PostutmeTrainerUserDetailsService;
 import java.security.SecureRandom;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,7 +31,7 @@ public class AuthService {
     private final ParentRepository parentRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private final AppUserDetailsService userDetailsService;
+    private final PostutmeTrainerUserDetailsService userDetailsService;
     private final AuthenticationManager authenticationManager;
 
     public AuthService(
@@ -40,7 +40,7 @@ public class AuthService {
             ParentRepository parentRepository,
             PasswordEncoder passwordEncoder,
             JwtService jwtService,
-            AppUserDetailsService userDetailsService,
+            PostutmeTrainerUserDetailsService userDetailsService,
             AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.studentRepository = studentRepository;

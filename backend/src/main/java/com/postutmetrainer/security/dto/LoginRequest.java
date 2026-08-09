@@ -1,4 +1,4 @@
-package com.postutmetrainer.dto;
+package com.postutmetrainer.security.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

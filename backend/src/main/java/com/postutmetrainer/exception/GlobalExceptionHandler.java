@@ -1,5 +1,6 @@
 package com.postutmetrainer.exception;
 
+import com.postutmetrainer.security.exception.AppSecurityException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -21,6 +22,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleBadCredentials(BadCredentialsException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new ApiErrorResponse("Invalid email or password", 401, LocalDateTime.now()));
+    }
+
+    // Covers UnsupportedAuthenticationTypeException too, since it extends AppSecurityException.
+    @ExceptionHandler(AppSecurityException.class)
+    public ResponseEntity<ApiErrorResponse> handleAppSecurityException(AppSecurityException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ApiErrorResponse(ex.getMessage(), 401, LocalDateTime.now()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
