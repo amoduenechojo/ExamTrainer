@@ -21,7 +21,12 @@ export default function StudentDashboard() {
 
   return (
     <div className="dashboard">
-      <h1>Your subjects</h1>
+      <div className="dashboard-header">
+        <h1>Your subjects</h1>
+        <button className="pomodoro-link" onClick={() => navigate("/pomodoro")}>
+          Study timer
+        </button>
+      </div>
 
       {weakTopics.length > 0 && (
         <section className="weak-topics-banner">

@@ -9,6 +9,7 @@ import ParentDashboard from "./pages/ParentDashboard";
 import SubjectTopicPicker from "./pages/SubjectTopicPicker";
 import Drill from "./pages/Drill";
 import Results from "./pages/Results";
+import PomodoroTimer from "./pages/PomodoroTimer";
 
 import "./App.css";
 
@@ -58,6 +59,14 @@ export default function App() {
             element={
               <ProtectedRoute allowedRoles={["STUDENT"]}>
                 <Results />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pomodoro"
+            element={
+              <ProtectedRoute allowedRoles={["STUDENT"]}>
+                <PomodoroTimer />
               </ProtectedRoute>
             }
           />
