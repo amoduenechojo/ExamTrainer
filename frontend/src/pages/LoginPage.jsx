@@ -9,8 +9,8 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  async function handleSubmit(event) {
+    event.preventDefault();
     setError("");
     setLoading(true);
     try {
@@ -33,7 +33,7 @@ export default function LoginPage() {
             type="email"
             required
             value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            onChange={(event) => setForm({ ...form, email: event.target.value })}
           />
         </label>
         <label>
@@ -42,7 +42,7 @@ export default function LoginPage() {
             type="password"
             required
             value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            onChange={(event) => setForm({ ...form, password: event.target.value })}
           />
         </label>
         {error && <p className="form-error">{error}</p>}

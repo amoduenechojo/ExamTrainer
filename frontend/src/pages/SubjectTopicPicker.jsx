@@ -9,7 +9,7 @@ export default function SubjectTopicPicker() {
   const [starting, setStarting] = useState(false);
 
   useEffect(() => {
-    getTopics(subjectId).then((res) => setTopics(res.data));
+    getTopics(subjectId).then((response) => setTopics(response.data));
   }, [subjectId]);
 
   async function begin(mode, topicId) {
@@ -37,15 +37,15 @@ export default function SubjectTopicPicker() {
 
       <h2>Or drill one topic</h2>
       <div className="topic-grid">
-        {topics.map((t) => (
+        {topics.map((topic) => (
           <button
-            key={t.id}
+            key={topic.id}
             className="topic-card"
             disabled={starting}
-            onClick={() => begin("topic", t.id)}
+            onClick={() => begin("topic", topic.id)}
           >
-            <h3>{t.name}</h3>
-            <p>{t.questionCount} questions</p>
+            <h3>{topic.name}</h3>
+            <p>{topic.questionCount} questions</p>
           </button>
         ))}
       </div>

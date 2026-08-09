@@ -24,12 +24,12 @@ export default function Results() {
         <section>
           <h2>Topics to revisit</h2>
           <ul>
-            {results.topicsToRevisit.map((t) => (
-              <li key={t.topicId}>
+            {results.topicsToRevisit.map((weakTopic) => (
+              <li key={weakTopic.topicId}>
                 <span>
-                  {t.topicName} — {t.accuracy}%
+                  {weakTopic.topicName} — {weakTopic.accuracy}%
                 </span>
-                <button onClick={() => navigate(`/drill/${t.subjectId}/${t.topicId}`)}>
+                <button onClick={() => navigate(`/drill/${weakTopic.subjectId}/${weakTopic.topicId}`)}>
                   Redrill this topic
                 </button>
               </li>

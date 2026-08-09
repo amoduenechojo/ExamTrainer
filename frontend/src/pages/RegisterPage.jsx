@@ -10,8 +10,8 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [inviteCode, setInviteCode] = useState(null);
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  async function handleSubmit(event) {
+    event.preventDefault();
     setError("");
     setLoading(true);
     try {
@@ -58,7 +58,7 @@ export default function RegisterPage() {
           <input
             required
             value={form.fullName}
-            onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+            onChange={(event) => setForm({ ...form, fullName: event.target.value })}
           />
         </label>
         <label>
@@ -67,7 +67,7 @@ export default function RegisterPage() {
             type="email"
             required
             value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            onChange={(event) => setForm({ ...form, email: event.target.value })}
           />
         </label>
         <label>
@@ -77,7 +77,7 @@ export default function RegisterPage() {
             required
             minLength={8}
             value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            onChange={(event) => setForm({ ...form, password: event.target.value })}
           />
         </label>
         {error && <p className="form-error">{error}</p>}

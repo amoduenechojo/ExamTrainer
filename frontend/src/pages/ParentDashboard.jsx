@@ -10,7 +10,7 @@ export default function ParentDashboard() {
   const [progressByStudent, setProgressByStudent] = useState({});
 
   function loadLinkedStudents() {
-    api.get("/parents/me/students").then((res) => setStudents(res.data));
+    api.get("/parents/me/students").then((response) => setStudents(response.data));
   }
 
   useEffect(() => {
@@ -18,15 +18,15 @@ export default function ParentDashboard() {
   }, []);
 
   useEffect(() => {
-    students.forEach((s) => {
-      getStudentProgress(s.id).then((res) =>
-        setProgressByStudent((prev) => ({ ...prev, [s.id]: res.data }))
+    students.forEach((student) => {
+      getStudentProgress(student.id).then((response) =>
+        setProgressByStudent((prev) => ({ ...prev, [student.id]: response.data }))
       );
     });
   }, [students]);
 
-  async function handleLink(e) {
-    e.preventDefault();
+  async function handleLink(event) {
+    event.preventDefault();
     setLinkError("");
     try {
       await linkToStudent(inviteCode);
@@ -47,7 +47,7 @@ export default function ParentDashboard() {
           <input
             placeholder="Enter invite code"
             value={inviteCode}
-            onChange={(e) => setInviteCode(e.target.value)}
+            onChange={(event) => setInviteCode(event.target.value)}
           />
         </label>
         <button type="submit">Link</button>
@@ -57,11 +57,11 @@ export default function ParentDashboard() {
       {students.length === 0 && <p>No students linked yet — ask your child for their invite code.</p>}
 
       <section className="student-progress-list">
-        {students.map((s) => {
-          const progress = progressByStudent[s.id];
+        {students.map((student) => {
+          const progress = progressByStudent[student.id];
           return (
-            <div key={s.id} className="student-progress-card">
-              <h3>{s.fullName}</h3>
+            <div key={student.id} className="student-progress-card">
+              <h3>{student.fullName}</h3>
               {progress ? (
                 <>
                   <p>Overall accuracy: {progress.overallAccuracy}%</p>
@@ -69,9 +69,9 @@ export default function ParentDashboard() {
                   <div>
                     <strong>Weakest topics</strong>
                     <ul>
-                      {progress.weakTopics.map((t) => (
-                        <li key={t.topicId}>
-                          {t.topicName} ({t.subjectName}) — {t.accuracy}%
+                      {progress.weakTopics.map((weakTopic) => (
+                        <li key={weakTopic.topicId}>
+                          {weakTopic.topicName} ({weakTopic.subjectName}) — {weakTopic.accuracy}%
                         </li>
                       ))}
                     </ul>
