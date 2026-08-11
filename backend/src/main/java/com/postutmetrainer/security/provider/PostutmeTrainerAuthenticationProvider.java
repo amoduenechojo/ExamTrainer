@@ -38,8 +38,7 @@ public class PostutmeTrainerAuthenticationProvider implements AuthenticationProv
             throw new BadCredentialsException("Invalid email or password");
         }
 
-        return new UsernamePasswordAuthenticationToken(
-                userDetails, userDetails.getPassword(), userDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
     @Override

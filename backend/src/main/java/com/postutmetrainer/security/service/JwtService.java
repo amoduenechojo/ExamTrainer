@@ -3,8 +3,8 @@ package com.postutmetrainer.security.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import java.security.Key;
 import java.util.Date;
+import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class JwtService {
 
-    private final Key signingKey;
+    private final SecretKey signingKey;
     private final long expirationMinutes;
 
     public JwtService(
@@ -47,7 +47,7 @@ public class JwtService {
     }
 
     private Claims parseClaims(String token) {
-        return Jwts.parser().verifyWith((javax.crypto.SecretKey) signingKey).build()
+        return Jwts.parser().verifyWith(signingKey).build()
                 .parseSignedClaims(token).getPayload();
     }
 }
