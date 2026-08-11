@@ -5,6 +5,7 @@ import com.postutmetrainer.exception.ApiException;
 import com.postutmetrainer.model.*;
 import com.postutmetrainer.repository.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -53,7 +54,7 @@ public class ExamService {
                 .map(subject -> new SubjectResponse(
                         subject.getId(),
                         subject.getName(),
-                        topicRepository.findBySubject_Id(subject.getId()).size()))
+                        topicRepository.countBySubject_Id(subject.getId())))
                 .toList();
     }
 
@@ -96,15 +97,16 @@ public class ExamService {
     }
 
     @Transactional(readOnly = true)
-    public SessionQuestionsResponse getSessionQuestions(Long sessionId) {
+    public SessionQuestionsResponse getSessionQuestions(Long sessionId, String studentEmail) {
         ExamSession session = getSession(sessionId);
+        assertOwnsSession(session, studentEmail);
 
         List<Question> pool = switch (session.getMode()) {
             case TOPIC -> questionRepository.findByTopic_Id(session.getTopic().getId());
             case SUBJECT, FULL_MOCK -> questionRepository.findBySubject_Id(session.getSubject().getId());
         };
 
-        List<Question> shuffled = new java.util.ArrayList<>(pool);
+        List<Question> shuffled = new ArrayList<>(pool);
         Collections.shuffle(shuffled);
 
         List<Question> selected = session.getMode() == ExamMode.FULL_MOCK
@@ -124,8 +126,9 @@ public class ExamService {
     }
 
     @Transactional
-    public AnswerFeedbackResponse submitAnswer(Long sessionId, SubmitAnswerRequest request) {
+    public AnswerFeedbackResponse submitAnswer(Long sessionId, SubmitAnswerRequest request, String studentEmail) {
         ExamSession session = getSession(sessionId);
+        assertOwnsSession(session, studentEmail);
 
         Question question = questionRepository.findById(request.questionId())
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Question not found"));
@@ -161,8 +164,9 @@ public class ExamService {
     }
 
     @Transactional
-    public void completeSession(Long sessionId) {
+    public void completeSession(Long sessionId, String studentEmail) {
         ExamSession session = getSession(sessionId);
+        assertOwnsSession(session, studentEmail);
         List<Attempt> attempts = attemptRepository.findBySession_Id(sessionId);
         int score = (int) attempts.stream().filter(Attempt::isCorrect).count();
 
@@ -172,8 +176,9 @@ public class ExamService {
     }
 
     @Transactional(readOnly = true)
-    public SessionResultsResponse getSessionResults(Long sessionId) {
+    public SessionResultsResponse getSessionResults(Long sessionId, String studentEmail) {
         ExamSession session = getSession(sessionId);
+        assertOwnsSession(session, studentEmail);
         List<Attempt> attempts = attemptRepository.findBySession_Id(sessionId);
 
         int total = attempts.size();
@@ -223,6 +228,14 @@ public class ExamService {
     private ExamSession getSession(Long sessionId) {
         return examSessionRepository.findById(sessionId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Session not found"));
+    }
+
+    // Prevents one student from reading/answering/completing another student's session by
+    // guessing or incrementing a session ID.
+    private void assertOwnsSession(ExamSession session, String studentEmail) {
+        if (!session.getStudent().getUser().getEmail().equals(studentEmail)) {
+            throw new ApiException(HttpStatus.FORBIDDEN, "This session doesn't belong to you");
+        }
     }
 
     private Student getStudentByEmail(String email) {

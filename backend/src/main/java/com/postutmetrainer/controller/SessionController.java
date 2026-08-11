@@ -22,22 +22,23 @@ public class SessionController {
     }
 
     @GetMapping("/{sessionId}/questions")
-    public SessionQuestionsResponse getQuestions(@PathVariable Long sessionId) {
-        return examService.getSessionQuestions(sessionId);
+    public SessionQuestionsResponse getQuestions(Authentication authentication, @PathVariable Long sessionId) {
+        return examService.getSessionQuestions(sessionId, authentication.getName());
     }
 
     @PostMapping("/{sessionId}/answers")
-    public AnswerFeedbackResponse submitAnswer(@PathVariable Long sessionId, @Valid @RequestBody SubmitAnswerRequest request) {
-        return examService.submitAnswer(sessionId, request);
+    public AnswerFeedbackResponse submitAnswer(
+            Authentication authentication, @PathVariable Long sessionId, @Valid @RequestBody SubmitAnswerRequest request) {
+        return examService.submitAnswer(sessionId, request, authentication.getName());
     }
 
     @PostMapping("/{sessionId}/complete")
-    public void completeSession(@PathVariable Long sessionId) {
-        examService.completeSession(sessionId);
+    public void completeSession(Authentication authentication, @PathVariable Long sessionId) {
+        examService.completeSession(sessionId, authentication.getName());
     }
 
     @GetMapping("/{sessionId}/results")
-    public SessionResultsResponse getResults(@PathVariable Long sessionId) {
-        return examService.getSessionResults(sessionId);
+    public SessionResultsResponse getResults(Authentication authentication, @PathVariable Long sessionId) {
+        return examService.getSessionResults(sessionId, authentication.getName());
     }
 }
