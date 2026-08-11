@@ -1,21 +1,36 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getSubjects, getWeakTopics } from "../services/examService";
+import { getSubjects, getWeakTopics, startSession } from "../services/examService";
 
 export default function StudentDashboard() {
   const navigate = useNavigate();
   const [subjects, setSubjects] = useState([]);
   const [weakTopics, setWeakTopics] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [startingTopicId, setStartingTopicId] = useState(null);
 
   useEffect(() => {
     Promise.all([getSubjects(), getWeakTopics()])
-      .then(([subjectsRes, weakRes]) => {
-        setSubjects(subjectsRes.data);
-        setWeakTopics(weakRes.data);
+      .then(([subjectsResponse, weakTopicsResponse]) => {
+        setSubjects(subjectsResponse.data);
+        setWeakTopics(weakTopicsResponse.data);
       })
       .finally(() => setLoading(false));
   }, []);
+
+  async function handlePracticeNow(weakTopic) {
+    setStartingTopicId(weakTopic.topicId);
+    try {
+      const { data } = await startSession({
+        subjectId: weakTopic.subjectId,
+        topicId: weakTopic.topicId,
+        mode: "topic",
+      });
+      navigate(`/drill/session/${data.sessionId}`);
+    } finally {
+      setStartingTopicId(null);
+    }
+  }
 
   if (loading) return <p className="loading">Loading your dashboard...</p>;
 
@@ -32,13 +47,16 @@ export default function StudentDashboard() {
         <section className="weak-topics-banner">
           <h2>Focus on these first</h2>
           <ul>
-            {weakTopics.map((t) => (
-              <li key={t.topicId}>
+            {weakTopics.map((weakTopic) => (
+              <li key={weakTopic.topicId}>
                 <span>
-                  {t.topicName} ({t.subjectName}) — {t.accuracy}% accuracy
+                  {weakTopic.topicName} ({weakTopic.subjectName}) — {weakTopic.accuracy}% accuracy
                 </span>
-                <button onClick={() => navigate(`/drill/${t.subjectId}/${t.topicId}`)}>
-                  Practice now
+                <button
+                  disabled={startingTopicId === weakTopic.topicId}
+                  onClick={() => handlePracticeNow(weakTopic)}
+                >
+                  {startingTopicId === weakTopic.topicId ? "Starting..." : "Practice now"}
                 </button>
               </li>
             ))}
@@ -47,14 +65,14 @@ export default function StudentDashboard() {
       )}
 
       <section className="subject-grid">
-        {subjects.map((s) => (
+        {subjects.map((subject) => (
           <button
-            key={s.id}
+            key={subject.id}
             className="subject-card"
-            onClick={() => navigate(`/subjects/${s.id}`)}
+            onClick={() => navigate(`/subjects/${subject.id}`)}
           >
-            <h3>{s.name}</h3>
-            <p>{s.topicCount} topics</p>
+            <h3>{subject.name}</h3>
+            <p>{subject.topicCount} topics</p>
           </button>
         ))}
       </section>

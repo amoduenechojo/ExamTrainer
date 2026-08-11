@@ -42,7 +42,7 @@ export default function PomodoroTimer() {
       advancePhase();
       return;
     }
-    const timer = setTimeout(() => setSecondsLeft((s) => s - 1), 1000);
+    const timer = setTimeout(() => setSecondsLeft((previousSeconds) => previousSeconds - 1), 1000);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRunning, secondsLeft]);

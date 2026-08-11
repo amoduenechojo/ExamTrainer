@@ -1,15 +1,30 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { getSessionResults } from "../services/examService";
+import { getSessionResults, startSession } from "../services/examService";
 
 export default function Results() {
   const { sessionId } = useParams();
   const navigate = useNavigate();
   const [results, setResults] = useState(null);
+  const [startingTopicId, setStartingTopicId] = useState(null);
 
   useEffect(() => {
     getSessionResults(sessionId).then(({ data }) => setResults(data));
   }, [sessionId]);
+
+  async function handleRedrill(weakTopic) {
+    setStartingTopicId(weakTopic.topicId);
+    try {
+      const { data } = await startSession({
+        subjectId: weakTopic.subjectId,
+        topicId: weakTopic.topicId,
+        mode: "topic",
+      });
+      navigate(`/drill/session/${data.sessionId}`);
+    } finally {
+      setStartingTopicId(null);
+    }
+  }
 
   if (!results) return <p className="loading">Scoring your session...</p>;
 
@@ -29,8 +44,11 @@ export default function Results() {
                 <span>
                   {weakTopic.topicName} — {weakTopic.accuracy}%
                 </span>
-                <button onClick={() => navigate(`/drill/${weakTopic.subjectId}/${weakTopic.topicId}`)}>
-                  Redrill this topic
+                <button
+                  disabled={startingTopicId === weakTopic.topicId}
+                  onClick={() => handleRedrill(weakTopic)}
+                >
+                  {startingTopicId === weakTopic.topicId ? "Starting..." : "Redrill this topic"}
                 </button>
               </li>
             ))}

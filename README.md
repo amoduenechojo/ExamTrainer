@@ -107,8 +107,3 @@ least 3 attempts), and the Pomodoro study timer.
 - No admin/CMS surface for entering questions — content currently has to go in via direct DB access
   or a script.
 - Pomodoro session history isn't persisted to the backend — it's in-memory only, per browser tab.
-- `npm run lint` currently reports false-positive `no-unused-vars` errors on every page that uses
-  JSX component imports (e.g. `<LoginPage />`). Root cause: `eslint-plugin-react` isn't in the
-  dependency set, and without it ESLint's core `no-unused-vars` rule doesn't recognize JSX tags as
-  usage of the imported component. Not fixed yet — pending a decision on whether to add the plugin
-  back in for that one behavior.
