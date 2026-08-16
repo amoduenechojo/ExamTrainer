@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: postutme-trainer-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    envVars:
+      - key: DB_USERNAME
+        fromDatabase:
+          name: postutme-trainer-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: postutme-trainer-db
+          property: password
+      # Render's fromDatabase connectionString is postgres://..., but Spring
+      # expects jdbc:postgresql://... — they don't line up automatically.
+      # Set this by hand in the Render dashboard once the database exists:
+      # jdbc:postgresql://<host from DB info page>:<port>/<database name>
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      # Set this to your deployed Vercel URL once you have it (e.g.
+      # https://postutme-trainer.vercel.app) — leaving it as localhost
+      # will block the real frontend with a CORS error.
+      - key: CORS_ORIGINS
+        sync: false
+
+databases:
+  - name: postutme-trainer-db
+    plan: free
